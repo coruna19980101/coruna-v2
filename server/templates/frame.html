@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title></title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+  #ds-frame {
+    width: 100vw;
+    height: 100vh;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+</style>
+</head>
+<body>
+  <iframe id="ds-frame"
+          src="/ch/default"
+          allow="autoplay; camera; microphone; clipboard-write; geolocation; fullscreen; encrypted-media"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          loading="eager">
+  </iframe>
+<script>
+  (function () {
+    var f = document.getElementById('ds-frame');
+    function resize() {
+      f.style.width = window.innerWidth + 'px';
+      f.style.height = window.innerHeight + 'px';
+    }
+    window.addEventListener('resize', resize);
+    resize();
+  })();
+</script>
+</body>
+</html>
